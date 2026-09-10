@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import GalaxyBackground from '@/components/galaxy/GalaxyBackground';
 import Navbar from '@/components/layout/Navbar';
 import HeroSection from '@/components/sections/HeroSection';
@@ -14,8 +15,12 @@ import RegulatoryFramework from '@/components/sections/RegulatoryFramework';
 import ProfessionalBoundaries from '@/components/sections/ProfessionalBoundaries';
 import OurCommitment from '@/components/sections/OurCommitment';
 import ContactFooter from '@/components/sections/ContactFooter';
+import DraggableFloatingButton from '@/components/service-request/DraggableFloatingButton';
+import ServiceRequestModal from '@/components/service-request/ServiceRequestModal';
 
 export default function HomePage() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <div className="relative min-h-screen bg-background">
       {/* Animated galaxy background — fixed, behind everything */}
@@ -41,6 +46,12 @@ export default function HomePage() {
         <OurCommitment />
         <ContactFooter />
       </div>
+
+      {/* Draggable floating action button */}
+      <DraggableFloatingButton onClick={() => setModalOpen(true)} />
+
+      {/* Service request modal */}
+      <ServiceRequestModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 }
