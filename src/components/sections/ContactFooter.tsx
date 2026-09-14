@@ -70,9 +70,9 @@ export default function ContactFooter() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div className="flex items-center gap-3">
               <img
-                src="/images/logo/logo-icon.svg"
-                alt="LTP"
-                className="h-8 w-8 object-contain"
+                src="/images/logo/logo.png"
+                alt="Legal Transformation Partners logo"
+                className="h-16 w-28 rounded-md bg-white/95 p-1 object-contain shadow-sm"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               <div>
@@ -101,6 +101,21 @@ export default function ContactFooter() {
               Advisory services are provided as described. Independent verification remains the responsibility
               of appropriately authorized independent professionals.
             </p>
+          </div>
+
+          <div className="mt-5 text-center text-xs text-muted-foreground">
+            <p>
+              Powered By:{" "}
+              <a
+                href="https://indabuko-global.vercel.app"
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary hover:underline"
+              >
+                Indabuko Tech Crafts
+              </a>
+            </p>
+            <p className="mt-1">Call/WhatsApp: +27 74 503 2009 / +268 7695 7019</p>
           </div>
         </div>
       </div>
