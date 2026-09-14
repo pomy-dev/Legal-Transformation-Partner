@@ -1,7 +1,11 @@
 import { useInView } from '@/hooks/useInView';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin, Phone, MessageSquareDotIcon } from 'lucide-react';
+
+const contactEmail = 'legaltransformationpartners@gmail.com';
+const contactPhone = '+27 764349385';
+const whatsappUrl = 'https://wa.me/27764349385';
 
 export default function ContactFooter() {
   const { ref, inView } = useInView();
@@ -29,7 +33,7 @@ export default function ContactFooter() {
               <Button
                 size="lg"
                 className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold tracking-wide px-8"
-                onClick={() => window.open('mailto:enquiries@ltpsa.co.za', '_blank')}
+                onClick={() => { window.location.href = `mailto:${contactEmail}`; }}
               >
                 <Mail className="h-4 w-4 mr-2" />
                 Send Enquiry
@@ -38,10 +42,10 @@ export default function ContactFooter() {
                 size="lg"
                 variant="ghost"
                 className="border border-primary/30 text-primary hover:bg-primary/10 font-semibold px-8"
-                onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => { window.location.href = `tel:${contactPhone.replace(/\s/g, '')}`; }}
               >
                 <Phone className="h-4 w-4 mr-2" />
-                Schedule Consultation
+                Call Founder
               </Button>
             </div>
           </div>
@@ -50,15 +54,21 @@ export default function ContactFooter() {
           <div className="grid sm:grid-cols-3 gap-5 mb-14">
             {[
               { icon: MapPin, label: 'Location', value: 'South Africa' },
-              { icon: Mail, label: 'Email', value: 'enquiries@ltpsa.co.za' },
-              { icon: Phone, label: 'Consultation', value: 'By appointment' },
+              { icon: Mail, label: 'Email', value: contactEmail, href: `mailto:${contactEmail}` },
+              { icon: MessageSquareDotIcon, label: 'Founder Director', value: 'Babalo Nombebe', href: `tel:${contactPhone.replace(/\s/g, '')}` },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="gold-card bg-background rounded-xl p-5 text-center flex flex-col items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
                   <Icon className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-xs text-muted-foreground font-medium tracking-wider uppercase">{label}</span>
-                <span className="text-sm font-semibold text-foreground">{value}</span>
+                {label === 'Location' ? (
+                  <span className="text-sm font-semibold text-foreground">{value}</span>
+                ) : (
+                  <a href={label === 'Email' ? `mailto:${contactEmail}` : whatsappUrl} target='_blank' rel='noreferrer' className="text-sm font-semibold text-foreground hover:text-primary">
+                    {value}
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -76,7 +86,7 @@ export default function ContactFooter() {
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               <div>
-                <p className="text-sm font-semibold text-foreground">Legal Transformation Partners (Pty) Ltd</p>
+                <p className="text-sm font-semibold text-foreground">Babalo Nombebe, Founder Director</p>
                 <p className="text-xs text-muted-foreground">Specialist B-BBEE Advisory &amp; Transformation Services</p>
               </div>
             </div>
@@ -86,7 +96,9 @@ export default function ContactFooter() {
             </div>
 
             <div className="text-right">
-              <p className="text-xs text-muted-foreground">South Africa</p>
+              <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="block text-xs text-muted-foreground hover:text-primary">
+                {contactPhone}
+              </a>
               <p className="text-xs text-muted-foreground mt-0.5">
                 © {new Date().getFullYear()} Legal Transformation Partners (Pty) Ltd
               </p>
@@ -115,7 +127,11 @@ export default function ContactFooter() {
                 Indabuko Tech Crafts
               </a>
             </p>
-            <p className="mt-1">Call/WhatsApp: +27 74 503 2009 / +268 7695 7019</p>
+            <p className="mt-1">
+              <a href={`tel:${"+268 7695 7019".replace(/\s/g, '')}`} className="hover:text-primary">Call: +27 74 503 2009 / +268 7695 7019</a>
+              {' / '}
+              <a href={"https://wa.me/+268 7695 7019"} target="_blank" rel="noreferrer" className="hover:text-primary">WhatsApp</a>
+            </p>
           </div>
         </div>
       </div>
