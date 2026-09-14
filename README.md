@@ -16,6 +16,14 @@ npm run dev
 
 Open the local URL printed by Vite, typically `http://localhost:3000`.
 
+## Service request email
+
+Service requests are sent through FormSubmit's AJAX relay to
+`legaltransformationpartners@gmail.com`. The first production submission
+requires confirming the activation email sent by FormSubmit. To use another
+relay, set `VITE_SERVICE_REQUEST_ENDPOINT` to its JSON POST endpoint before
+building the site.
+
 ## Production build
 
 ```sh

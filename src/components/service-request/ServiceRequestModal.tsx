@@ -95,6 +95,30 @@ const REFERRAL = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STEPS = ['Contact', 'Service', 'Details', 'Review'];
+const SERVICE_REQUEST_ENDPOINT = import.meta.env.VITE_SERVICE_REQUEST_ENDPOINT
+  ?? 'https://formsubmit.co/ajax/phumlaninxumalo7695@gmail.com';
+  // ?? 'https://formsubmit.co/ajax/legaltransformationpartners@gmail.com';
+
+const formatSubmission = (form: FormData) => ({
+  _subject: `New service enquiry: ${form.serviceCategory || 'Advisory services'} - ${form.organization || 'Website enquiry'}`,
+  _template: 'table',
+  _captcha: 'false',
+  _replyto: form.email,
+  'First name': form.firstName,
+  'Last name': form.lastName,
+  'Email address': form.email,
+  'Phone number': form.phone || 'Not provided',
+  'Organisation / practice': form.organization,
+  'Role / title': form.role || 'Not provided',
+  'Service required': SERVICES.find(service => service.value === form.serviceCategory)?.label ?? form.serviceCategory,
+  'Legal entity type': ENTITY_TYPES.find(entity => entity.value === form.entityType)?.label ?? form.entityType,
+  'Timeline / urgency': URGENCY.find(urgency => urgency.value === form.urgency)?.label ?? form.urgency,
+  'Current B-BBEE position': form.currentPosition || 'Not provided',
+  'Primary challenge or objective': form.challenges,
+  'Additional information': form.additionalInfo || 'Not provided',
+  'Preferred contact method': CONTACT_PREF.find(contact => contact.value === form.preferredContact)?.label ?? form.preferredContact,
+  'Referral source': (REFERRAL.find(referral => referral.value === form.referralSource)?.label ?? form.referralSource) || 'Not provided',
+});
 
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
@@ -111,16 +135,14 @@ function StepIndicator({ current }: { current: number }) {
       {STEPS.map((label, i) => (
         <div key={label} className="flex items-center">
           <div className="flex flex-col items-center gap-1">
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border transition-all duration-300 ${
-              i < current ? 'bg-primary border-primary text-primary-foreground' :
-              i === current ? 'bg-primary/20 border-primary text-primary' :
-              'bg-muted border-border text-muted-foreground'
-            }`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border transition-all duration-300 ${i < current ? 'bg-primary border-primary text-primary-foreground' :
+                i === current ? 'bg-primary/20 border-primary text-primary' :
+                  'bg-muted border-border text-muted-foreground'
+              }`}>
               {i < current ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
             </div>
-            <span className={`text-[10px] font-medium tracking-wide whitespace-nowrap hidden sm:block transition-colors ${
-              i === current ? 'text-primary' : i < current ? 'text-primary/70' : 'text-muted-foreground'
-            }`}>{label}</span>
+            <span className={`text-[10px] font-medium tracking-wide whitespace-nowrap hidden sm:block transition-colors ${i === current ? 'text-primary' : i < current ? 'text-primary/70' : 'text-muted-foreground'
+              }`}>{label}</span>
           </div>
           {i < STEPS.length - 1 && (
             <div className={`w-8 md:w-12 h-px mx-1 mt-[-10px] sm:mt-[-22px] transition-colors ${i < current ? 'bg-primary/60' : 'bg-border'}`} />
@@ -143,6 +165,9 @@ export default function ServiceRequestModal({ open, onClose }: ServiceRequestMod
   const [form, setForm] = useState<FormData>(INITIAL);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
+  const [submitError, setSubmitError] = useState(false);
+  const [submissionReference, setSubmissionReference] = useState('');
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = back
 
   const set = (key: keyof FormData) => (
@@ -190,14 +215,49 @@ export default function ServiceRequestModal({ open, onClose }: ServiceRequestMod
     setStep(s => s - 1);
   };
 
-  const submit = () => {
-    setSubmitted(true);
+  const submit = async () => {
+    if (!validate()) return;
+
+    setIsSubmitting(true);
+    setSubmitError(false);
+
+    try {
+      const response = await fetch(SERVICE_REQUEST_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formatSubmission(form)),
+      });
+
+      if (response.ok) {
+        const result = await response.json().catch(() => null);
+        if (result?.success === false) {
+          throw new Error(result.message || 'The email relay rejected the enquiry.');
+        }
+        setSubmissionReference(`TLP-${Date.now().toString(36).toUpperCase()}`);
+        setSubmitted(true);
+      } else {
+        throw new Error(`Email relay responded with ${response.status}.`);
+      }
+    } catch (error) {
+      setSubmitError(true);
+      console.error('Service request submission failed:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
     onClose();
     // Reset after close animation completes
-    setTimeout(() => { setStep(0); setForm(INITIAL); setErrors({}); setSubmitted(false); }, 400);
+    setTimeout(() => {
+      setStep(0);
+      setForm(INITIAL);
+      setErrors({});
+      setSubmitted(false);
+      setSubmissionReference('');
+    }, 400);
   };
 
   // Slide variants
@@ -289,7 +349,7 @@ export default function ServiceRequestModal({ open, onClose }: ServiceRequestMod
                       <p className="text-xs text-muted-foreground mb-1">Service requested</p>
                       <p className="text-sm font-semibold text-foreground">{service}</p>
                       <p className="text-xs text-muted-foreground mt-2 mb-1">Reference</p>
-                      <p className="text-sm font-mono text-primary">TLP-{Date.now().toString(36).toUpperCase()}</p>
+                      <p className="text-sm font-mono text-primary">{submissionReference}</p>
                     </div>
                     <Button
                       className="mt-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
@@ -487,7 +547,12 @@ export default function ServiceRequestModal({ open, onClose }: ServiceRequestMod
 
               {/* Footer navigation */}
               {!submitted && (
-                <div className="shrink-0 px-6 py-4 border-t border-border bg-muted/20 flex items-center justify-between gap-3">
+                <div className="relative shrink-0 px-6 py-4 border-t border-border bg-muted/20 flex items-center justify-between gap-3">
+                  {submitError && (
+                    <p className="absolute bottom-[4.5rem] left-6 right-6 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                      We could not send your enquiry. Please check your connection and try again.
+                    </p>
+                  )}
                   {step > 0 ? (
                     <Button variant="ghost" onClick={back} className="text-muted-foreground hover:text-foreground border border-border gap-1">
                       <ChevronLeft className="h-4 w-4" /> Back
@@ -512,9 +577,10 @@ export default function ServiceRequestModal({ open, onClose }: ServiceRequestMod
                   ) : (
                     <Button
                       onClick={submit}
+                      disabled={isSubmitting}
                       className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold gap-1"
                     >
-                      <Send className="h-4 w-4" /> Submit Enquiry
+                      <Send className="h-4 w-4" /> {isSubmitting ? 'Sending…' : 'Submit Enquiry'}
                     </Button>
                   )}
                 </div>
