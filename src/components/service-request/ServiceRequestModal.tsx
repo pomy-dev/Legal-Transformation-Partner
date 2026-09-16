@@ -96,8 +96,7 @@ const REFERRAL = [
 
 const STEPS = ['Contact', 'Service', 'Details', 'Review'];
 const SERVICE_REQUEST_ENDPOINT = import.meta.env.VITE_SERVICE_REQUEST_ENDPOINT
-  ?? 'https://formsubmit.co/ajax/phumlaninxumalo7695@gmail.com';
-  // ?? 'https://formsubmit.co/ajax/legaltransformationpartners@gmail.com';
+  ?? 'https://formsubmit.co/ajax/admin@legaltransformationpartners.com';
 
 const formatSubmission = (form: FormData) => ({
   _subject: `New service enquiry: ${form.serviceCategory || 'Advisory services'} - ${form.organization || 'Website enquiry'}`,
@@ -136,8 +135,8 @@ function StepIndicator({ current }: { current: number }) {
         <div key={label} className="flex items-center">
           <div className="flex flex-col items-center gap-1">
             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border transition-all duration-300 ${i < current ? 'bg-primary border-primary text-primary-foreground' :
-                i === current ? 'bg-primary/20 border-primary text-primary' :
-                  'bg-muted border-border text-muted-foreground'
+              i === current ? 'bg-primary/20 border-primary text-primary' :
+                'bg-muted border-border text-muted-foreground'
               }`}>
               {i < current ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
             </div>
