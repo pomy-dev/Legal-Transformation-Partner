@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Mail, MapPin, Phone, MessageSquareDotIcon } from 'lucide-react';
 
-const contactEmail = 'legaltransformationpartners@gmail.com';
+const contactEmail = 'admin@legaltransformationpartners.com';
 const contactPhone = '+27 764349385';
 const whatsappUrl = 'https://wa.me/27764349385';
 
